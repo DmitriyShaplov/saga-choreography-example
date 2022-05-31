@@ -1,0 +1,43 @@
+server:
+  port: 8081
+
+spring:
+  cloud:
+    function:
+      definition: processOrder;processDelivery;statistic;
+    stream:
+      bindings:
+        processOrder-in-0:
+          destination: order.topic
+          group: workshop-process.group
+        processOrder-out-0:
+          destination: workshop.topic
+        processOrder-out-1:
+          destination: sometest.topic
+        statistic-in-0:
+          destination: order.topic
+          group: workshop-stat.group
+        processDelivery-in-0:
+          destination: delivery.topic
+          group: workshop.group
+      kafka:
+        binder:
+          brokers: localhost:9092
+        default:
+          producer:
+            configuration:
+              key.serializer: org.apache.kafka.common.serialization.UUIDSerializer
+          consumer:
+            configuration:
+              key.deserializer: org.apache.kafka.common.deserialization.UUIDDeserializer
+        streams:
+          binder:
+            configuration:
+              cache.max.bytes.buffering: 0
+              commit.interval.ms: 0
+              default:
+                key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+logging:
+  level:
+    root: error
+    'ru.example.sword.workshop': debug

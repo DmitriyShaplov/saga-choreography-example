@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    function:
+      definition: handleDelivery;handleWorkshop;
+    stream:
+      output-bindings: order
+      bindings:
+        order-out-0:
+          destination: order.topic
+        handleDelivery-in-0:
+          destination: delivery.topic
+          group: tradeshop.group
+        handleWorkshop-in-0:
+          destination: workshop.topic
+          group: tradeshop.group
+      kafka:
+        binder:
+          brokers: localhost:9092
+        default:
+          producer:
+            configuration:
+              key.serializer: org.apache.kafka.common.serialization.UUIDSerializer
+          consumer:
+            configuration:
+              key.deserializer: org.apache.kafka.common.deserialization.UUIDDeserializer\
+        streams:
+          binder:
+            configuration:
+              default:
+                key.serde: org.apache.kafka.common.serialization.Serdes$UUIDSerde
+
+logging:
+  level:
+    root: error
+    'ru.example.sword.tradeshop': debug
